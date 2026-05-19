@@ -43,7 +43,7 @@ stages:
           - task: AzureCLI@2
             displayName: "Criar container no ACI"
             inputs:
-              azureSubscription: "jokenpo-azure-connection"
+              azureSubscription: "Azure for Students (09c004c8-b4c2-42ce-bbc2-c91c252995eb)"
               scriptType:        "bash"
               scriptLocation:    "inlineScript"
               inlineScript: |
