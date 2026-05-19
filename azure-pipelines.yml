@@ -1,17 +1,66 @@
 trigger:
-- main
- 
+  - main
+
 pool:
   vmImage: ubuntu-latest
- 
-steps:
 
-- task: Docker@2
-  inputs:
-    containerRegistry: 'pythonmssqlrm559366'
-    repository: 'pythonsql'
-    command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    tags: |
-      $(Build.BuildId)
-      latest
+stages:
+
+  - stage: Build
+    displayName: "Build e Push para ACR"
+    jobs:
+      - job: BuildAndPush
+        steps:
+
+          - task: Docker@2
+            displayName: "Build da imagem"
+            inputs:
+              containerRegistry: "pythonmssqlrm559366"
+              repository:        "pythonsql"
+              command:           "build"
+              Dockerfile:        "**/Dockerfile"
+              tags: |
+                $(Build.BuildId)
+                latest
+
+          - task: Docker@2
+            displayName: "Push para ACR"
+            inputs:
+              containerRegistry: "pythonmssqlrm559366"
+              repository:        "pythonsql"
+              command:           "push"
+              tags: |
+                $(Build.BuildId)
+                latest
+
+  - stage: Deploy
+    displayName: "Deploy no ACI"
+    dependsOn: Build
+    jobs:
+      - job: DeployACI
+        steps:
+
+          - task: AzureCLI@2
+            displayName: "Criar container no ACI"
+            inputs:
+              azureSubscription: "jokenpo-azure-connection"
+              scriptType:        "bash"
+              scriptLocation:    "inlineScript"
+              inlineScript: |
+                az container create \
+                  --resource-group $(grupoRecursos) \
+                  --name           $(nomeACI) \
+                  --image          $(imageACR) \
+                  --registry-login-server $(REGISTRY_LOGIN_SERVER) \
+                  --registry-username     $(REGISTRY_USERNAME) \
+                  --registry-password     $(REGISTRY_PASSWORD) \
+                  --cpu 1 --memory 1.5 \
+                  --ports 80 \
+                  --os-type Linux \
+                  --restart-policy Always \
+                  --location $(LOCATION) \
+                  --environment-variables \
+                      DB_USER="$(DB_USER)" \
+                      DB_PASSWORD="$(DB_PASSWORD)" \
+                      DB_HOST="$(DB_HOST)" \
+                      DB_NAME="$(DB_NAME)"
