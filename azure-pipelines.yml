@@ -47,12 +47,17 @@ stages:
               scriptType:        "bash"
               scriptLocation:    "inlineScript"
               inlineScript: |
+                az container delete \
+                  --resource-group cp3-docker-ci-cd \
+                  --name pythonmssqlrm559366 \
+                  --yes
+
                 az container create \
                   --resource-group cp3-docker-ci-cd \
                   --name pythonmssqlrm559366 \
                   --image pythonmssqlrm559366.azurecr.io/pythonsql:latest \
-                  --cpu 1 \
-                  --memory 1 \
+                  --cpu 2 \
+                  --memory 2 \
                   --os-type Linux \
                   --registry-login-server pythonmssqlrm559366.azurecr.io \
                   --registry-username pythonmssqlrm559366 \
