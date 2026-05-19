@@ -48,19 +48,20 @@ stages:
               scriptLocation:    "inlineScript"
               inlineScript: |
                 az container create \
-                  --resource-group $(grupoRecursos) \
-                  --name           $(nomeACI) \
-                  --image          $(imageACR) \
-                  --registry-login-server $(REGISTRY_LOGIN_SERVER) \
-                  --registry-username     $(REGISTRY_USERNAME) \
-                  --registry-password     $(REGISTRY_PASSWORD) \
-                  --cpu 1 --memory 1.5 \
-                  --ports 80 \
+                  --resource-group cp3-docker-ci-cd \
+                  --name pythonmssqlrm559366 \
+                  --image pythonmssqlrm559366.azurecr.io/pythonsql:latest \
+                  --cpu 1 \
+                  --memory 1 \
                   --os-type Linux \
+                  --registry-login-server pythonmssqlrm559366.azurecr.io \
+                  --registry-username pythonmssqlrm559366 \
+                  --registry-password "3muT7V2asbVxQTRzJ0mptmjn9gVTFzrS2AGAqze4XqIbV6A4mVSyJQQJ99CEACZoyfiEqg7NAAACAZCR0uyW" \
+                  --dns-name-label pythonmssqlrm559366 \
                   --restart-policy Always \
-                  --location $(LOCATION) \
+                  --ports 80 \
                   --environment-variables \
-                      DB_USER="$(DB_USER)" \
-                      DB_PASSWORD="$(DB_PASSWORD)" \
-                      DB_HOST="$(DB_HOST)" \
-                      DB_NAME="$(DB_NAME)"
+                      DB_USER="user-dimdimsql" \
+                      DB_PASSWORD="Jokenpo@2026!" \
+                      DB_HOST="sql-server-dimdim-rm559366-brazilsouth.database.windows.net" \
+                      DB_NAME="db-dimdim"
